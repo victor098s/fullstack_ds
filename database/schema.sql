@@ -1,0 +1,4 @@
+CREATE TABLE usuarios (id SERIAL PRIMARY KEY, nome VARCHAR(100) NOT NULL, email VARCHAR(150) UNIQUE NOT NULL, senha_hash VARCHAR(255) NOT NULL, papel VARCHAR(20) NOT NULL DEFAULT 'usuario', criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE categorias (id SERIAL PRIMARY KEY, nome VARCHAR(60) UNIQUE NOT NULL);
+CREATE TABLE filmes (id SERIAL PRIMARY KEY, titulo VARCHAR(180) NOT NULL, sinopse TEXT NOT NULL, ano INTEGER NOT NULL, duracao INTEGER NOT NULL, classificacao VARCHAR(20) NOT NULL, poster_url TEXT, destaque BOOLEAN DEFAULT FALSE, categoria_id INTEGER NOT NULL REFERENCES categorias(id), criado_por INTEGER REFERENCES usuarios(id), criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+INSERT INTO categorias (nome) VALUES ('Terror'), ('Romance'), ('Aventura'), ('Comédia'), ('Drama'), ('Ação'), ('Ficção científica'), ('Suspense'), ('Animação');
