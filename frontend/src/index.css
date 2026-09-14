@@ -270,6 +270,12 @@ textarea:focus {
 .grid article:hover {
   transform: translateY(-5px);
 }
+.poster-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 245px;
+}
 .poster {
   height: 245px;
   width: 100%;
@@ -277,7 +283,17 @@ textarea:focus {
   display: block;
   background: #292520;
 }
+.poster-wrap.big,
+.poster-wrap.big .poster,
+.poster-wrap.big .movie-image {
+  height: 460px;
+}
+.movie-image {
+  display: block;
+}
 .fall {
+  position: absolute;
+  inset: 0;
   display: grid;
   place-items: center;
   text-align: center;
