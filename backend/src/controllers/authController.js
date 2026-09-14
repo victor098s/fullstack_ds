@@ -16,7 +16,7 @@ function gerarToken(usuario) {
   return jwt.sign(
     { id: usuario.Id_user, email: usuario.Email, role: usuario.Role_user },
     process.env.JWT_SECRET,
-    { expiresIn: "1m" },
+    { expiresIn: "24h" },
   );
 }
 

@@ -10,8 +10,9 @@ const camposObrigatorios = [
 ];
 
 function corpoValido(corpo) {
+  if (!corpo) return false;
   return camposObrigatorios.every(
-    (campo) => corpo[campo] !== undefined && corpo[campo] !== null && corpo[campo] !== '',
+    (campo) => corpo[campo] !== undefined && corpo[campo] !== null && String(corpo[campo]).trim() !== '',
   );
 }
 
