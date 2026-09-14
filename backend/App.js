@@ -1,26 +1,38 @@
-require("dotenv").config();
-// Configuração do servidor Express e dos middlewares de JSON/CORS.
-const express = require("express");
-const cors = require("cors");
-const films = require("./src/routes/filmesRoutes");
-const c = require("./src/controllers/filmesController");
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '.env') });
+
+const express = require('express');
+const cors = require('cors');
+const filmesRoutes = require('./src/routes/filmesRoutes');
+const authRoutes = require('./src/routes/authRoutes');
+const usuariosRoutes = require('./src/routes/usuariosRoutes');
+
 const app = express();
+const port = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
-// Rotas públicas: saúde da API, login, cadastro e consulta de categorias.
-app.get("/api/health", (_, res) => res.json({ status: "ok" }));
-app.post("/api/auth/login", c.login);
-app.post("/api/auth/cadastro", c.cadastro);
-app.get("/api/categorias", c.categorias);
-// As rotas de filmes exigem um token válido.
-app.use("/api/filmes", c.auth, films);
-app.use((err, _, res, __) => {
-  console.error(err);
-  res.status(500).json({ erro: "Erro interno do servidor." });
+
+app.get('/health', (req, res) => {
+	res.status(200).json({ status: 'ok' });
 });
-const port = process.env.PORT || 3001;
-if (require.main === module)
-  app.listen(port, () =>
-    console.log(`API CineVault: http://localhost:${port}`),
-  );
+
+app.use('/filmes', filmesRoutes);
+app.use('/auth', authRoutes);
+app.use('/usuarios', usuariosRoutes);
+
+app.use((req, res) => {
+	res.status(404).json({ error: 'Rota não encontrada' });
+});
+
+app.use((error, req, res, next) => {
+	console.error(error);
+	res.status(500).json({ error: 'Erro interno do servidor' });
+});
+
+if (require.main === module) {
+	app.listen(port, () => {
+		console.log(`Servidor rodando em http://localhost:${port}`);
+	});
+}
 module.exports = app;

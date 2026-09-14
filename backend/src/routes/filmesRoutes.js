@@ -1,10 +1,13 @@
-const r = require("express").Router(),
-  c = require("../controllers/filmesController");
+const express = require('express');
+const filmesController = require('../controllers/filmesController');
+const { autenticar, exigirAdmin } = require('../middleware/authMiddleware');
 
-// Leitura é permitida a usuários autenticados; escrita exige papel de administrador.
-r.get("/", c.listar);
-r.get("/:id", c.buscar);
-r.post("/", c.admin, c.criar);
-r.put("/:id", c.admin, c.atualizar);
-r.delete("/:id", c.admin, c.excluir);
-module.exports = r;
+const router = express.Router();
+
+router.get('/', filmesController.listarTodos);
+router.get('/buscar', filmesController.listarPorNome);
+router.post('/', autenticar, exigirAdmin, filmesController.criarFilme);
+router.put('/:id', autenticar, exigirAdmin, filmesController.atualizarFilme);
+router.delete('/:id', autenticar, exigirAdmin, filmesController.deletarFilme);
+
+module.exports = router;
