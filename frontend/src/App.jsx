@@ -15,6 +15,21 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:3001/api",
     posterUrl: "",
     destaque: false,
   };
+
+const request = async (path, opt = {}, token = "") => {
+  const response = await fetch(API + path, {
+    ...opt,
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+      "Content-Type": "application/json",
+      ...opt.headers,
+    },
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw Error(data.erro || "Erro na operação");
+  return data;
+};
+
 export default function App() {
   // Estados da sessão, navegação, catálogo, formulários e mensagens da interface.
   const [t, setT] = useState(localStorage.cv_token || ""),
@@ -31,33 +46,42 @@ export default function App() {
     [a, setA] = useState({ nome: "", email: "", senha: "" }),
     admin = u?.papel === "admin";
   // Centraliza as chamadas à API e inclui o token JWT quando o usuário está logado.
-  const call = async (path, opt = {}) => {
-    let r = await fetch(API + path, {
-        ...opt,
-        headers: {
-          Authorization: t ? `Bearer ${t}` : "",
-          "Content-Type": "application/json",
-          ...opt.headers,
-        },
-      }),
-      d = await r.json().catch(() => ({}));
-    if (!r.ok) throw Error(d.erro || "Erro na operação");
-    return d;
-  };
+  const call = (path, opt = {}, token = t) => request(path, opt, token);
   // Busca filmes e categorias para preencher o catálogo e os filtros.
-  const load = async () => {
+  const load = async (token = t) => {
     try {
-      let [x, y] = await Promise.all([call("/filmes"), call("/categorias")]);
+      let [x, y] = await Promise.all([
+        call("/filmes", {}, token),
+        call("/categorias", {}, token),
+      ]);
       setFilms(x);
       setCats(y);
     } catch (e) {
       setErr(e.message);
     }
   };
-  // Carrega os dados iniciais uma única vez ao abrir a aplicação.
   useEffect(() => {
-    load();
-  }, []);
+    if (!t) return;
+    let active = true;
+    const loadSessionCatalog = async () => {
+      try {
+        const [movies, categories] = await Promise.all([
+          request("/filmes", {}, t),
+          request("/categorias", {}, t),
+        ]);
+        if (active) {
+          setFilms(movies);
+          setCats(categories);
+        }
+      } catch (e) {
+        if (active) setErr(e.message);
+      }
+    };
+    loadSessionCatalog();
+    return () => {
+      active = false;
+    };
+  }, [t]);
   // Funções de interação: navegar, avisar o usuário, autenticar e gerenciar filmes.
   const go = (x) => {
       setErr("");
@@ -79,6 +103,7 @@ export default function App() {
         localStorage.cv_user = JSON.stringify(d.usuario);
         setT(d.token);
         setU(d.usuario);
+        await load(d.token);
         go("dash");
         flash("Bem-vindo ao CineVault!");
       } catch (e) {
@@ -458,13 +483,8 @@ export default function App() {
   );
 }
 function Poster({ x, big }) {
-  return x.posterUrl ? (
-    <img
-      className={"poster movie-image " + (big ? "big" : "")}
-      src={x.posterUrl}
-      alt={"Pôster de " + x.titulo}
-    />
-  ) : (
+  const [imageFailed, setImageFailed] = useState(false);
+  const fallback = (
     <div
       className={
         "poster fall category-" + x.categoriaId + " " + (big ? "big" : "")
@@ -475,6 +495,16 @@ function Poster({ x, big }) {
       <b>{x.titulo}</b>
     </div>
   );
+
+  return x.posterUrl && !imageFailed ? (
+    <img
+      className={"poster movie-image " + (big ? "big" : "")}
+      src={x.posterUrl}
+      alt={`Pôster de ${x.titulo}`}
+      referrerPolicy="no-referrer"
+      onError={() => setImageFailed(true)}
+    />
+  ) : fallback;
 }
 function Grid({ films, open }) {
   return (

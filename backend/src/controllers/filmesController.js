@@ -156,6 +156,28 @@ const posterUrls = [
   "https://assets-prd.ignimgs.com/2022/01/13/uncharted-poster-full-1642086040683.jpg",
   "https://dunenewsnet.com/wp-content/uploads/2021/08/Dune-Movie-Main-Poster.jpg",
 ];
+// Pôsteres conferidos por título. A estrutura anterior usava uma lista linear
+// incompleta, o que fazia a imagem de um filme aparecer em outro cartão.
+const verifiedPosters = {
+  "Pânico": "https://upload.wikimedia.org/wikipedia/en/8/86/Scream_%281996_film%29_poster.jpg",
+  "O Exorcista": "https://upload.wikimedia.org/wikipedia/en/7/7b/Exorcist_ver2.jpg",
+  "A Freira": "https://upload.wikimedia.org/wikipedia/en/3/34/TheNunPoster.jpg",
+  "Invocação do Mal": "https://upload.wikimedia.org/wikipedia/en/8/8c/The_Conjuring_poster.jpg",
+  "Como Eu Era Antes de Você": "https://upload.wikimedia.org/wikipedia/en/f/fd/Me_Before_You_%28film%29.jpg",
+  "Orgulho e Preconceito": "https://upload.wikimedia.org/wikipedia/en/0/03/Prideandprejudiceposter.jpg",
+  Titanic: "https://upload.wikimedia.org/wikipedia/en/1/18/Titanic_%281997_film%29_poster.png",
+  "Simplesmente Acontece": "https://upload.wikimedia.org/wikipedia/en/e/eb/Love%2C_Rosie_%28film%29_UK_poster.jpg",
+  "A Cinco Passos de Você": "https://upload.wikimedia.org/wikipedia/en/a/a7/Five_Feet_Apart_%282019_poster%29.png",
+  "Questão de Tempo": "https://upload.wikimedia.org/wikipedia/en/7/7c/About_Time_%282013_film%29_Poster.jpg",
+  "Para Todos os Garotos que Já Amei": "https://upload.wikimedia.org/wikipedia/en/b/b8/To_All_the_Boys_I%27ve_Loved_Before_poster.jpg",
+  "La La Land": "https://upload.wikimedia.org/wikipedia/en/a/ab/La_La_Land_%28film%29.png",
+  "Jurassic Park": "https://upload.wikimedia.org/wikipedia/en/e/e7/Jurassic_Park_poster.jpg",
+};
+const fallbackPoster = (titulo, categoriaId) => {
+  const colors = ["472c3b", "5e344a", "29465b", "694b2f", "354739", "4d2930", "233959", "463249", "4e3e65"];
+  return `https://placehold.co/600x900/${colors[categoriaId - 1]}/f6f1eb/png?text=${encodeURIComponent(titulo)}`;
+};
+
 let movies = Object.entries(catalog).flatMap(([categoriaId, items]) =>
   items.map(([titulo, ano], index) => ({
     id: +categoriaId * 100 + index + 1,
@@ -166,7 +188,8 @@ let movies = Object.entries(catalog).flatMap(([categoriaId, items]) =>
     classificacao: index % 3 === 0 ? "14 anos" : "12 anos",
     categoriaId: +categoriaId,
     destaque: index < 2,
-    posterUrl: posterUrls[(Number(categoriaId) - 1) * 10 + index] || "",
+    posterUrl:
+      verifiedPosters[titulo] || fallbackPoster(titulo, Number(categoriaId)),
   })),
 );
 let users = [
