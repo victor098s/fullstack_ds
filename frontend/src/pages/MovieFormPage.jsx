@@ -75,6 +75,15 @@ export function MovieFormPage({ selectedMovie, onSave, navigate }) {
               placeholder="Ex: Francis Ford Coppola"
             />
           </label>
+          <label>
+            URL da imagem
+            <input
+              type="url"
+              value={f.imagem || ""}
+              onChange={(e) => setF({ ...f, imagem: e.target.value })}
+              placeholder="https://imagem.com/poster.jpg"
+            />
+          </label>
           <button className="primary">
             {selectedMovie ? "Salvar alterações" : "Cadastrar filme"}
           </button>

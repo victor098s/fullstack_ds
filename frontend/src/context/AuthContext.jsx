@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
   const login = async (email, senha) => {
     const data = await request("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ Email: email, Senha: senha }),
+      body: JSON.stringify({ email, senha }),
     });
 
     const authToken = data.token;
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
   const register = async (nome, email, senha) => {
     await request("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ Nome: nome, Email: email, Senha: senha }),
+      body: JSON.stringify({ nome, email, senha }),
     });
   };
 

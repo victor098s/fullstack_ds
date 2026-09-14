@@ -7,6 +7,7 @@ export const blankMovie = {
   ano: "",
   genero: "",
   nome_do_diretor: "",
+  imagem: "",
 };
 
 export const normalizeMovie = (item = {}) => ({
@@ -17,6 +18,7 @@ export const normalizeMovie = (item = {}) => ({
   ano: Number(item.ano ?? 0),
   genero: item.genero ?? item.categoria ?? "Geral",
   nome_do_diretor: item.nome_do_diretor ?? item.diretor ?? "",
+  imagem: item.imagem ?? item.imagem_url ?? item.posterUrl ?? item.poster_url ?? "",
 });
 
 export const buildMoviePayload = (f) => ({
@@ -26,6 +28,7 @@ export const buildMoviePayload = (f) => ({
   ano: Number(f.ano || 0),
   genero: String(f.genero || "").trim(),
   nome_do_diretor: String(f.nome_do_diretor || "").trim(),
+  imagem: String(f.imagem || "").trim(),
 });
 
 export const request = async (path, opt = {}, token = "") => {

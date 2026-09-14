@@ -62,6 +62,7 @@ async function criarFilme(req, res) {
       req.body.ano,
       req.body.genero,
       req.body.nome_do_diretor,
+      req.body.imagem || req.body.posterUrl || req.body.poster_url || null,
     );
 
     return res.status(201).json(filme);
@@ -84,6 +85,7 @@ async function atualizarFilme(req, res) {
       req.body.ano,
       req.body.genero,
       req.body.nome_do_diretor,
+      req.body.imagem || req.body.posterUrl || req.body.poster_url || null,
     );
 
     if (!filme) {

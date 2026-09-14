@@ -4,8 +4,37 @@ const usuariosModel = require("../models/usuariosModel");
 
 const saltRounds = 12;
 
+function lerCampo(body, ...chaves) {
+  for (const chave of chaves) {
+    if (body?.[chave] !== undefined && body?.[chave] !== null && body?.[chave] !== '') {
+      return body[chave];
+    }
+  }
+  return undefined;
+}
+
 function dadosValidos(body) {
-  return body && body.Nome && body.Email && body.Senha;
+  return Boolean(
+    lerCampo(body, 'Nome', 'nome') &&
+    lerCampo(body, 'Email', 'email') &&
+    lerCampo(body, 'Senha', 'senha'),
+  );
+}
+
+async function senhaCorreta(senhaInformada, senhaArmazenada) {
+  if (!senhaInformada || !senhaArmazenada) {
+    return false;
+  }
+
+  if (senhaArmazenada === senhaInformada) {
+    return true;
+  }
+
+  try {
+    return await bcrypt.compare(senhaInformada, senhaArmazenada);
+  } catch {
+    return false;
+  }
 }
 
 function gerarToken(usuario) {
@@ -40,18 +69,25 @@ async function registrar(req, res) {
   }
 
   try {
-    const email = req.body.Email.trim().toLowerCase();
+    const nome = lerCampo(req.body, 'Nome', 'nome')?.trim();
+    const email = lerCampo(req.body, 'Email', 'email')?.trim().toLowerCase();
+    const senha = lerCampo(req.body, 'Senha', 'senha');
+
+    if (!nome || !email || !senha) {
+      return res.status(400).json({ error: "Nome, email e senha são obrigatórios" });
+    }
+
     const existente = await usuariosModel.buscarPorEmail(email);
 
     if (existente) {
       return res.status(400).json({ error: "Email já cadastrado" });
     }
 
-    const senha = await bcrypt.hash(req.body.Senha, saltRounds);
+    const senhaHash = await bcrypt.hash(senha, saltRounds);
     const usuario = await usuariosModel.criar({
-      nome: req.body.Nome.trim(),
+      nome,
       email,
-      senha,
+      senha: senhaHash,
       role: "user",
     });
 
@@ -70,15 +106,20 @@ async function registrar(req, res) {
 }
 
 async function login(req, res) {
-  if (!req.body?.Email || !req.body?.Senha) {
+  if (!lerCampo(req.body, 'Email', 'email') || !lerCampo(req.body, 'Senha', 'senha')) {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
 
   try {
-    const email = req.body.Email.trim().toLowerCase();
+    const email = lerCampo(req.body, 'Email', 'email')?.trim().toLowerCase();
+    const senha = lerCampo(req.body, 'Senha', 'senha');
+
+    if (!email || !senha) {
+      return res.status(400).json({ error: "Email e senha são obrigatórios" });
+    }
+
     const usuario = await usuariosModel.buscarPorEmail(email);
-    const senhaValida =
-      usuario && (await bcrypt.compare(req.body.Senha, usuario.Senha));
+    const senhaValida = usuario && (await senhaCorreta(senha, usuario.Senha));
 
     if (!senhaValida) {
       return res.status(401).json({ error: "Email ou senha inválidos" });
@@ -121,18 +162,25 @@ async function criarAdmin(req, res) {
   }
 
   try {
-    const email = req.body.Email.trim().toLowerCase();
+    const nome = lerCampo(req.body, 'Nome', 'nome')?.trim();
+    const email = lerCampo(req.body, 'Email', 'email')?.trim().toLowerCase();
+    const senha = lerCampo(req.body, 'Senha', 'senha');
+
+    if (!nome || !email || !senha) {
+      return res.status(400).json({ error: "Nome, email e senha são obrigatórios" });
+    }
+
     const existente = await usuariosModel.buscarPorEmail(email);
 
     if (existente) {
       return res.status(400).json({ error: "Email já cadastrado" });
     }
 
-    const senha = await bcrypt.hash(req.body.Senha, saltRounds);
+    const senhaHash = await bcrypt.hash(senha, saltRounds);
     const usuario = await usuariosModel.criar({
-      nome: req.body.Nome.trim(),
+      nome,
       email,
-      senha,
+      senha: senhaHash,
       role: "admin",
     });
 

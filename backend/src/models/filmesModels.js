@@ -19,9 +19,10 @@ async function criarFilme(
   ano,
   genero,
   nome_do_diretor,
+  imagem,
 ) {
-  const sql = `INSERT INTO vwFilmes (nome, duracao, quantidade, ano, genero, nome_do_diretor)
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
+  const sql = `INSERT INTO vwFilmes (nome, duracao, quantidade, ano, genero, nome_do_diretor, imagem)
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`;
   const result = await pool.query(sql, [
     nome,
     duracao,
@@ -29,6 +30,7 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`;
     ano,
     genero,
     nome_do_diretor,
+    imagem || null,
   ]);
   return result.rows[0];
 }
@@ -41,10 +43,11 @@ async function atualizarFilme(
   ano,
   genero,
   nome_do_diretor,
+  imagem,
 ) {
   const sql = `UPDATE vwFilmes
-SET nome = $1, duracao = $2, quantidade = $3, ano = $4, genero = $5, nome_do_diretor = $6
-WHERE id_filme = $7 RETURNING *`;
+SET nome = $1, duracao = $2, quantidade = $3, ano = $4, genero = $5, nome_do_diretor = $6, imagem = $7
+WHERE id_filme = $8 RETURNING *`;
   const result = await pool.query(sql, [
     nome,
     duracao,
@@ -52,6 +55,7 @@ WHERE id_filme = $7 RETURNING *`;
     ano,
     genero,
     nome_do_diretor,
+    imagem || null,
     id,
   ]);
   return result.rows[0];
