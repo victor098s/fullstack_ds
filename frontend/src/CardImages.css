@@ -1,0 +1,16 @@
+/* Imagem opcional do card: informe uma URL no formulário do filme. */
+.movie-image {
+  width: 100%;
+  height: 245px;
+  object-fit: cover;
+  object-position: center;
+  background: #292520;
+}
+.movie-image:hover {
+  filter: brightness(1.08);
+}
+@media (max-width: 700px) {
+  .movie-image {
+    height: 190px;
+  }
+}

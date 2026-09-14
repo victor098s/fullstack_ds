@@ -35,5 +35,4 @@ if (require.main === module) {
 		console.log(`Servidor rodando em http://localhost:${port}`);
 	});
 }
-
 module.exports = app;
