@@ -4,8 +4,8 @@ const { autenticar, exigirAdmin } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.get('/', filmesController.listarTodos);
-router.get('/buscar', filmesController.listarPorNome);
+router.get('/', autenticar, filmesController.listarTodos);
+router.get('/buscar', autenticar, filmesController.listarPorNome);
 router.post('/', autenticar, exigirAdmin, filmesController.criarFilme);
 router.put('/:id', autenticar, exigirAdmin, filmesController.atualizarFilme);
 router.delete('/:id', autenticar, exigirAdmin, filmesController.deletarFilme);

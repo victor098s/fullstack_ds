@@ -17,7 +17,7 @@ import { MovieFormPage } from "./pages/MovieFormPage";
 import { request, normalizeMovie, buildMoviePayload } from "./api/api";
 
 function MainContent() {
-  const { isAuthenticated, token, logout } = useAuth();
+  const { isAuthenticated, isAdmin, token, logout } = useAuth();
   const [route, setRoute] = useState(() => (localStorage.getItem("cv_token") ? "dash" : "home"));
   const [films, setFilms] = useState([]);
   const [cats, setCats] = useState([]);
@@ -68,6 +68,11 @@ function MainContent() {
   };
 
   const handleOpenForm = (movie = null) => {
+    if (!isAdmin) {
+      setErr("Apenas administradores podem gerenciar filmes.");
+      return;
+    }
+
     setSelectedMovie(movie);
     navigate("form");
   };
@@ -164,6 +169,10 @@ function MainContent() {
           />
         );
       case "form":
+        if (!isAdmin) {
+          return <CatalogPage films={films} cats={cats} onSelectMovie={handleSelectMovie} onAddMovie={() => handleOpenForm(null)} />;
+        }
+
         return (
           <MovieFormPage
             selectedMovie={selectedMovie}

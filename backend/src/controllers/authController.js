@@ -6,7 +6,11 @@ const saltRounds = 12;
 
 function lerCampo(body, ...chaves) {
   for (const chave of chaves) {
-    if (body?.[chave] !== undefined && body?.[chave] !== null && body?.[chave] !== '') {
+    if (
+      body?.[chave] !== undefined &&
+      body?.[chave] !== null &&
+      body?.[chave] !== ""
+    ) {
       return body[chave];
     }
   }
@@ -15,9 +19,9 @@ function lerCampo(body, ...chaves) {
 
 function dadosValidos(body) {
   return Boolean(
-    lerCampo(body, 'Nome', 'nome') &&
-    lerCampo(body, 'Email', 'email') &&
-    lerCampo(body, 'Senha', 'senha'),
+    lerCampo(body, "Nome", "nome") &&
+    lerCampo(body, "Email", "email") &&
+    lerCampo(body, "Senha", "senha"),
   );
 }
 
@@ -45,7 +49,7 @@ function gerarToken(usuario) {
   return jwt.sign(
     { id: usuario.Id_user, email: usuario.Email, role: usuario.Role_user },
     process.env.JWT_SECRET,
-    { expiresIn: "24h" },
+    { expiresIn: "30m" },
   );
 }
 
@@ -69,12 +73,14 @@ async function registrar(req, res) {
   }
 
   try {
-    const nome = lerCampo(req.body, 'Nome', 'nome')?.trim();
-    const email = lerCampo(req.body, 'Email', 'email')?.trim().toLowerCase();
-    const senha = lerCampo(req.body, 'Senha', 'senha');
+    const nome = lerCampo(req.body, "Nome", "nome")?.trim();
+    const email = lerCampo(req.body, "Email", "email")?.trim().toLowerCase();
+    const senha = lerCampo(req.body, "Senha", "senha");
 
     if (!nome || !email || !senha) {
-      return res.status(400).json({ error: "Nome, email e senha são obrigatórios" });
+      return res
+        .status(400)
+        .json({ error: "Nome, email e senha são obrigatórios" });
     }
 
     const existente = await usuariosModel.buscarPorEmail(email);
@@ -106,13 +112,16 @@ async function registrar(req, res) {
 }
 
 async function login(req, res) {
-  if (!lerCampo(req.body, 'Email', 'email') || !lerCampo(req.body, 'Senha', 'senha')) {
+  if (
+    !lerCampo(req.body, "Email", "email") ||
+    !lerCampo(req.body, "Senha", "senha")
+  ) {
     return res.status(400).json({ error: "Email e senha são obrigatórios" });
   }
 
   try {
-    const email = lerCampo(req.body, 'Email', 'email')?.trim().toLowerCase();
-    const senha = lerCampo(req.body, 'Senha', 'senha');
+    const email = lerCampo(req.body, "Email", "email")?.trim().toLowerCase();
+    const senha = lerCampo(req.body, "Senha", "senha");
 
     if (!email || !senha) {
       return res.status(400).json({ error: "Email e senha são obrigatórios" });
@@ -162,12 +171,14 @@ async function criarAdmin(req, res) {
   }
 
   try {
-    const nome = lerCampo(req.body, 'Nome', 'nome')?.trim();
-    const email = lerCampo(req.body, 'Email', 'email')?.trim().toLowerCase();
-    const senha = lerCampo(req.body, 'Senha', 'senha');
+    const nome = lerCampo(req.body, "Nome", "nome")?.trim();
+    const email = lerCampo(req.body, "Email", "email")?.trim().toLowerCase();
+    const senha = lerCampo(req.body, "Senha", "senha");
 
     if (!nome || !email || !senha) {
-      return res.status(400).json({ error: "Nome, email e senha são obrigatórios" });
+      return res
+        .status(400)
+        .json({ error: "Nome, email e senha são obrigatórios" });
     }
 
     const existente = await usuariosModel.buscarPorEmail(email);

@@ -11,9 +11,30 @@ const readStoredUser = () => {
   }
 };
 
+const tokenExpirado = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return !payload.exp || payload.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+};
+
+const readStoredToken = () => {
+  const storedToken = localStorage.getItem("cv_token") || "";
+
+  if (!storedToken || tokenExpirado(storedToken)) {
+    localStorage.removeItem("cv_token");
+    localStorage.removeItem("cv_user");
+    return "";
+  }
+
+  return storedToken;
+};
+
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem("cv_token") || "");
-  const [user, setUser] = useState(() => readStoredUser());
+  const [token, setToken] = useState(() => readStoredToken());
+  const [user, setUser] = useState(() => (localStorage.getItem("cv_token") ? readStoredUser() : null));
 
   const isAdmin = user?.role === "admin" || user?.papel === "admin";
 

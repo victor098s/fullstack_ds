@@ -13,7 +13,7 @@ O **CineVault** é uma aplicação web fullstack para gerenciamento e navegaçã
 
 ### 1. Autenticação e Gestão de Usuários
 - **Cadastro de Usuário**: Permite a criação de novas contas enviando Nome, E-mail e Senha.
-- **Login de Usuário**: Autenticação via e-mail e senha com geração de token seguro **JWT (JSON Web Token)** com expiração de 24 horas.
+- **Login de Usuário**: Autenticação via e-mail e senha com geração de token seguro **JWT (JSON Web Token)** com expiração de 30 minutos.
 - **Diferenciação de Perfis**:
   - **Usuário Comum (`user`)**: Pode visualizar o Dashboard, navegar no Catálogo de filmes e ver detalhes de cada obra.
   - **Administrador (`admin`)**: Possui permissões totais para adicionar novos filmes, editar dados existentes e excluir filmes do catálogo.
