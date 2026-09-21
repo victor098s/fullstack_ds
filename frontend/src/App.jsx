@@ -14,7 +14,7 @@ import { CatalogPage } from "./pages/CatalogPage";
 import { MovieDetailPage } from "./pages/MovieDetailPage";
 import { MovieFormPage } from "./pages/MovieFormPage";
 
-import { request, normalizeMovie, buildMoviePayload } from "./api/api";
+import { request, normalizeMovie, buildMoviePayload, deduplicateMovies } from "./api/api";
 
 function MainContent() {
   const { isAuthenticated, isAdmin, token, logout } = useAuth();
@@ -40,8 +40,15 @@ function MainContent() {
     if (!token) return;
     try {
       const data = await request("/filmes", {}, token);
-      const movies = Array.isArray(data) ? data.map(normalizeMovie) : [];
-      const uniqueCats = [...new Set(movies.map((m) => m.genero).filter(Boolean))];
+      const movies = deduplicateMovies(Array.isArray(data) ? data : []);
+      const uniqueCats = [
+        ...new Set(
+          movies
+            .flatMap((m) => (m.genero || "").split(/[\/,]/))
+            .map((g) => g.trim())
+            .filter(Boolean)
+        ),
+      ].sort((a, b) => a.localeCompare(b, "pt-BR"));
 
       setFilms(movies);
       setCats(uniqueCats);

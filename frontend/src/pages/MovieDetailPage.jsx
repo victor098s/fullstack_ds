@@ -17,7 +17,8 @@ export function MovieDetailPage({ movie, navigate, onEdit, onDelete }) {
           <p className="eyebrow">{movie.genero}</p>
           <h1>{movie.nome}</h1>
           <p className="meta">
-            {movie.ano} · {movie.duracao} min · Quantidade: {movie.quantidade}
+            {movie.ano} · {movie.duracao} · Classificação Indicativa:{" "}
+            {movie.quantidade}
           </p>
           <p className="synopsis">
             <strong>Diretor:</strong> {movie.nome_do_diretor}

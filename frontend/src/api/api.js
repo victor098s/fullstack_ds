@@ -21,6 +21,34 @@ export const normalizeMovie = (item = {}) => ({
   imagem: item.imagem ?? item.imagem_url ?? item.posterUrl ?? item.poster_url ?? "",
 });
 
+export const deduplicateMovies = (rawArray = []) => {
+  if (!Array.isArray(rawArray)) return [];
+  const map = new Map();
+
+  for (const item of rawArray) {
+    if (!item) continue;
+    const norm = normalizeMovie(item);
+    const key = norm.id;
+
+    if (!map.has(key)) {
+      map.set(key, norm);
+    } else {
+      const existing = map.get(key);
+      if (norm.nome_do_diretor && existing.nome_do_diretor && !existing.nome_do_diretor.includes(norm.nome_do_diretor)) {
+        existing.nome_do_diretor += `, ${norm.nome_do_diretor}`;
+      }
+      if (norm.genero && existing.genero && !existing.genero.includes(norm.genero)) {
+        existing.genero += ` / ${norm.genero}`;
+      }
+      if (!existing.imagem && norm.imagem) {
+        existing.imagem = norm.imagem;
+      }
+    }
+  }
+
+  return Array.from(map.values());
+};
+
 export const buildMoviePayload = (f) => ({
   nome: String(f.nome || "").trim(),
   duracao: String(f.duracao || "").trim(),
