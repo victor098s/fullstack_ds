@@ -1,4 +1,4 @@
-export const API = (import.meta.env.VITE_API_URL || "http://localhost:3000").replace(/\/$/, "");
+export const API = (import.meta.env.VITE_API_URL || "https://fullstack-ds.vercel.app/").replace(/\/$/, "");
 
 export const blankMovie = {
   nome: "",
